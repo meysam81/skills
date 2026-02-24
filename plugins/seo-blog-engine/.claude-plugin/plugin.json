@@ -1,0 +1,10 @@
+{
+  "name": "seo-blog-engine",
+  "description": "SEO blog post production pipeline: research prompts, keyword analysis, outlines, writing, review, and post-publish validation",
+  "version": "1.0.0",
+  "author": {
+    "name": "Meysam"
+  },
+  "license": "UNLICENSED",
+  "keywords": ["seo", "blog", "content", "keywords", "dataforseo", "writing"]
+}

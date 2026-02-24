@@ -1,0 +1,15 @@
+{
+  "name": "meysam-skills",
+  "description": "Curated skills and plugins for Claude Code",
+  "owner": {
+    "name": "Meysam",
+    "url": "https://github.com/meysam81"
+  },
+  "plugins": [
+    {
+      "name": "seo-blog-engine",
+      "description": "SEO blog post production pipeline: research prompts, keyword analysis, outlines, writing, review, and post-publish validation",
+      "source": "./plugins/seo-blog-engine"
+    }
+  ]
+}
