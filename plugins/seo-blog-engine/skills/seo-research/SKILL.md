@@ -12,6 +12,26 @@ Generate a ready-to-paste prompt for Claude.ai's deep research mode that collect
 
 1. **Topic or keyword** — provided by user in their message
 2. **Brand voice** — read from `docs/seo/brand-voice.md` (if exists)
+3. **Topical clusters** — read from `docs/seo/topical-clusters.md` (if exists)
+4. **Output path** (optional) — user may specify a file path; default is `docs/seo/<slug>/prompt.md`
+
+## Article Directory Convention
+
+All per-article files live in `docs/seo/<slug>/` where `<slug>` is derived from the topic:
+
+- Lowercase, hyphenated, 3-5 words (e.g., "DMARC Failed: The Complete Troubleshooting Guide" → `dmarc-failed-troubleshooting-guide`)
+- If the user specifies a path in their message, use that instead
+- Create the directory if it doesn't exist
+
+Files in this directory across the pipeline:
+
+| File                | Created by            |
+| ------------------- | --------------------- |
+| `prompt.md`         | `/seo-research`       |
+| `research-brief.md` | User (from Claude.ai) |
+| `keyword-data.md`   | `/seo-keywords`       |
+| `outline.md`        | `/seo-outline`        |
+| `draft.md`          | `/seo-write`          |
 
 ## Process
 
@@ -26,6 +46,13 @@ Read `docs/seo/brand-voice.md` if it exists. Extract:
 - Competitors
 
 If the file doesn't exist, ask the user for: industry, target audience, and 2-3 competitor names.
+
+Read `docs/seo/topical-clusters.md` if it exists. Look for the current topic in the cluster map to understand:
+
+- Which pillar this post belongs to
+- What other posts in the cluster it should link to
+- The strategic role of this post (TOFU/MOFU/BOFU)
+- Phase priority and target audience segment
 
 ### Step 2 — Generate Deep Research Prompt
 
@@ -80,22 +107,31 @@ CRITICAL INSTRUCTIONS:
    - Legitimate criticisms or limitations
    - Edge cases and exceptions
 
-### Step 3 — Output the Prompt
+### Step 3 — Determine Output Path
 
-Write the generated prompt to the user's conversation with clear instructions:
+1. If the user specified a file path in their message, use that
+2. Otherwise, derive a slug from the topic (lowercase, hyphenated, 3-5 words)
+3. Output path: `docs/seo/<slug>/prompt.md`
+4. Create the directory if it doesn't exist
+
+### Step 4 — Write the Prompt to File
+
+Write the generated research prompt to the output file using the Write tool.
+
+Then tell the user:
 
 ```
 ## How to Use This Prompt
 
+Prompt written to `docs/seo/<slug>/prompt.md`.
+
 1. Open Claude.ai (https://claude.ai)
 2. Start a new conversation
 3. Click the "Deep Research" button (or use the research mode toggle)
-4. Paste the prompt below
+4. Open the prompt file and paste its contents
 5. Wait for the research to complete (typically 3-5 minutes)
-6. Save the output to `docs/seo/research-brief.md` in your project
+6. Save the output to `docs/seo/<slug>/research-brief.md` in your project
 ```
-
-Then output the full prompt text, ready to copy-paste.
 
 ## Output Format
 

@@ -18,9 +18,14 @@ Read these for evaluation criteria (relative to this skill's base directory):
 
 ## Inputs
 
-1. **Draft** — `docs/seo/draft.md` (required)
-2. **Outline** — `docs/seo/outline.md` (required — used to verify structure compliance)
-3. **Keyword data** — `docs/seo/keyword-data.md` (required — used to verify keyword usage)
+1. **Draft** — `docs/seo/<slug>/draft.md` (required)
+2. **Outline** — `docs/seo/<slug>/outline.md` (required — used to verify structure compliance)
+3. **Keyword data** — `docs/seo/<slug>/keyword-data.md` (required — used to verify keyword usage)
+4. **Article directory** — user specifies `docs/seo/<slug>/` or skill finds the directory containing `draft.md`
+
+## Article Directory Convention
+
+All per-article files live in `docs/seo/<slug>/`. The user provides the slug, or the skill finds it by looking for the directory containing `draft.md`.
 
 ## Scoring Rubric (100 points)
 
@@ -202,4 +207,4 @@ Present the review directly in the conversation (do NOT write to a file):
 After the review, tell the user:
 
 > If score >= 80: "The draft is ready. Apply the minor fixes noted above, then publish or run `/seo-optimize` after publishing to verify on-page performance."
-> If score < 80: "Apply the fixes above, then re-run `/seo-review` to check your score. Alternatively, re-run `/seo-write` if major structural changes are needed."
+> If score < 80: "Apply the fixes above, then re-run `/seo-review <slug>` to check your score. Alternatively, re-run `/seo-write <slug>` if major structural changes are needed."

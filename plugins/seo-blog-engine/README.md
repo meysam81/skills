@@ -4,33 +4,35 @@ A family of 6 skills for producing SEO-optimized blog posts through a structured
 
 ## Skills
 
-| #   | Skill        | Command         | Purpose                                         |
-| --- | ------------ | --------------- | ----------------------------------------------- |
-| 1   | seo-research | `/seo-research` | Generate a deep research prompt for Claude.ai   |
-| 2   | seo-keywords | `/seo-keywords` | Keyword research & SERP analysis via DataForSEO |
-| 3   | seo-outline  | `/seo-outline`  | Content brief & detailed outline                |
-| 4   | seo-write    | `/seo-write`    | Full blog post draft from outline               |
-| 5   | seo-review   | `/seo-review`   | SEO audit with 100-point scoring rubric         |
-| 6   | seo-optimize | `/seo-optimize` | Post-publish validation via DataForSEO          |
+| #   | Skill        | Command                   | Purpose                                         |
+| --- | ------------ | ------------------------- | ----------------------------------------------- |
+| 1   | seo-research | `/seo-research <topic>`   | Generate a deep research prompt for Claude.ai   |
+| 2   | seo-keywords | `/seo-keywords <keyword>` | Keyword research & SERP analysis via DataForSEO |
+| 3   | seo-outline  | `/seo-outline [slug]`     | Content brief & detailed outline                |
+| 4   | seo-write    | `/seo-write [slug]`       | Full blog post draft from outline               |
+| 5   | seo-review   | `/seo-review [slug]`      | SEO audit with 100-point scoring rubric         |
+| 6   | seo-optimize | `/seo-optimize <url>`     | Post-publish validation via DataForSEO          |
 
 ## Workflow
 
 ```
-/seo-research  →  (paste into Claude.ai deep research)
-                        ↓
-                  save to docs/seo/research-brief.md
-                        ↓
-/seo-keywords  →  docs/seo/keyword-data.md
-                        ↓
-/seo-outline   →  docs/seo/outline.md  →  (user reviews/edits)
-                        ↓
-/seo-write     →  docs/seo/draft.md
-                        ↓
-/seo-review    →  100-point score + fix recommendations
-                        ↓
-               (publish the post)
-                        ↓
-/seo-optimize  →  post-publish health report
+/seo-research "DMARC Failed Guide"  →  docs/seo/dmarc-failed-guide/prompt.md
+                                              ↓
+                                     (paste prompt into Claude.ai deep research)
+                                              ↓
+                                     save output to docs/seo/dmarc-failed-guide/research-brief.md
+                                              ↓
+/seo-keywords "dmarc failed"         →  docs/seo/dmarc-failed-guide/keyword-data.md
+                                              ↓
+/seo-outline dmarc-failed-guide      →  docs/seo/dmarc-failed-guide/outline.md  →  (user reviews)
+                                              ↓
+/seo-write dmarc-failed-guide        →  docs/seo/dmarc-failed-guide/draft.md
+                                              ↓
+/seo-review dmarc-failed-guide       →  100-point score + fix recommendations
+                                              ↓
+                                     (publish the post)
+                                              ↓
+/seo-optimize <published-url>        →  post-publish health report
 ```
 
 ## Setup
@@ -46,7 +48,9 @@ This plugin is installed at `~/.claude/plugins/seo-blog-engine/`. Claude Code di
 
 ### Per-Project Setup
 
-Create `docs/seo/brand-voice.md` in your project with:
+Create these files in `docs/seo/`:
+
+**`brand-voice.md`** (required) — tone, audience, terminology, competitors:
 
 ```markdown
 # Brand Voice
@@ -72,6 +76,24 @@ Create `docs/seo/brand-voice.md` in your project with:
 - Names and domains (used for gap analysis)
 ```
 
+**`topical-clusters.md`** (optional) — long-term content strategy roadmap:
+
+```markdown
+# Topical Clusters
+
+## Pillar 1: [Topic]
+
+- P1.0: [Pillar post title]
+- P1.1: [Supporting post]
+- P1.2: [Supporting post]
+
+## Pillar 2: [Topic]
+
+...
+```
+
+When present, skills use the cluster map to plan internal linking, understand each post's strategic role (TOFU/MOFU/BOFU), and maintain content coherence across the blog.
+
 ## References
 
 The `references/` directory contains distilled SEO knowledge used by the skills:
@@ -83,14 +105,34 @@ The `references/` directory contains distilled SEO knowledge used by the skills:
 | `eeat-signals.md`            | E-E-A-T implementation guide by content type                    |
 | `schema-markup-templates.md` | Article, FAQ, HowTo, BreadcrumbList JSON-LD templates           |
 
-## Per-Project Files
+## Per-Project File Structure
 
-Each project using these skills maintains files in `docs/seo/`:
+Global files live in `docs/seo/`. Per-article files live in `docs/seo/<slug>/`:
 
-| File                | Created by            | Purpose                                              |
-| ------------------- | --------------------- | ---------------------------------------------------- |
-| `brand-voice.md`    | User (manual)         | Tone, audience, terminology, competitors             |
-| `research-brief.md` | User (from Claude.ai) | Facts, stats, quotes, case studies                   |
-| `keyword-data.md`   | `/seo-keywords`       | Keyword analysis with volumes, difficulty, SERP data |
-| `outline.md`        | `/seo-outline`        | Approved content structure and keyword mapping       |
-| `draft.md`          | `/seo-write`          | Complete blog post draft with schema markup          |
+```
+docs/seo/
+├── brand-voice.md              # shared — tone, audience, terminology
+├── topical-clusters.md         # shared — long-term content roadmap
+├── dmarc-failed-guide/         # per-article directory
+│   ├── prompt.md               # from /seo-research
+│   ├── research-brief.md       # user saves from Claude.ai
+│   ├── keyword-data.md         # from /seo-keywords
+│   ├── outline.md              # from /seo-outline
+│   └── draft.md                # from /seo-write
+├── best-dmarc-tools-2026/
+│   ├── prompt.md
+│   └── ...
+└── spf-record-setup/
+    ├── prompt.md
+    └── ...
+```
+
+| File                       | Created by            | Purpose                                              |
+| -------------------------- | --------------------- | ---------------------------------------------------- |
+| `brand-voice.md`           | User (manual)         | Tone, audience, terminology, competitors             |
+| `topical-clusters.md`      | User / `/seo-outline` | Long-term content strategy and pillar map            |
+| `<slug>/prompt.md`         | `/seo-research`       | Deep research prompt for Claude.ai                   |
+| `<slug>/research-brief.md` | User (from Claude.ai) | Facts, stats, quotes, case studies                   |
+| `<slug>/keyword-data.md`   | `/seo-keywords`       | Keyword analysis with volumes, difficulty, SERP data |
+| `<slug>/outline.md`        | `/seo-outline`        | Approved content structure and keyword mapping       |
+| `<slug>/draft.md`          | `/seo-write`          | Complete blog post draft with schema markup          |

@@ -23,8 +23,13 @@ Read `../../references/dataforseo-workflows.md` (relative to this skill's base d
 ## Inputs
 
 1. **Published URL** — provided by user
-2. **Primary keyword** — provided by user (or read from `docs/seo/keyword-data.md`)
-3. **Outline** — `docs/seo/outline.md` (optional, for verification against plan)
+2. **Primary keyword** — provided by user (or read from `docs/seo/<slug>/keyword-data.md`)
+3. **Outline** — `docs/seo/<slug>/outline.md` (optional, for verification against plan)
+4. **Article directory** — user specifies `docs/seo/<slug>/` or skill infers from keyword-data.md location
+
+## Article Directory Convention
+
+All per-article files live in `docs/seo/<slug>/`. The user provides the slug, or the skill searches for the directory containing `keyword-data.md` with the matching primary keyword.
 
 ## Process
 

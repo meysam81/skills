@@ -32,7 +32,13 @@ Read `../../references/dataforseo-workflows.md` (relative to this skill's base d
 
 1. **Seed keyword(s)** — provided by user
 2. **Brand voice** — read `docs/seo/brand-voice.md` for niche context
-3. **Target market** — default US (location_code: 2840, language_code: "en"); ask if different
+3. **Topical clusters** — read `docs/seo/topical-clusters.md` (if exists) to understand pillar context, related posts, and strategic role
+4. **Article directory** — user specifies `docs/seo/<slug>/` or the skill infers it from the seed keyword
+5. **Target market** — default US (location_code: 2840, language_code: "en"); ask if different
+
+## Article Directory Convention
+
+All per-article files live in `docs/seo/<slug>/`. If the user provides a slug or article directory, use it. Otherwise, derive from the seed keyword (lowercase, hyphenated, 3-5 words). If a `prompt.md` already exists in the directory (from `/seo-research`), that confirms the correct directory.
 
 ## Process
 
@@ -114,7 +120,7 @@ Use `relevant_pages` to check if your domain already has a page that could rank 
 
 ## Output
 
-Write results to `docs/seo/keyword-data.md`:
+Write results to `docs/seo/<slug>/keyword-data.md`:
 
 ```markdown
 # Keyword Research: {{Primary Keyword}}

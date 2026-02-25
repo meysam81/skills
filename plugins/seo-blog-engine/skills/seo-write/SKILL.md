@@ -18,11 +18,17 @@ Read these before writing (relative to this skill's base directory):
 
 ## Inputs
 
-ALL three are required:
+The first three are required:
 
-1. **Approved outline** — `docs/seo/outline.md` (from `seo-outline`, user-reviewed)
-2. **Research brief** — `docs/seo/research-brief.md`
+1. **Approved outline** — `docs/seo/<slug>/outline.md` (from `seo-outline`, user-reviewed)
+2. **Research brief** — `docs/seo/<slug>/research-brief.md`
 3. **Brand voice** — `docs/seo/brand-voice.md`
+4. **Topical clusters** — `docs/seo/topical-clusters.md` (if exists) — use to weave in internal links to sibling/related posts
+5. **Article directory** — user specifies `docs/seo/<slug>/` or skill finds the directory containing `outline.md` and `research-brief.md`
+
+## Article Directory Convention
+
+All per-article files live in `docs/seo/<slug>/`. The user provides the slug, or the skill finds it by looking for the directory containing the required input files.
 
 ## Process
 
@@ -150,7 +156,7 @@ Before outputting, verify every item:
 
 ## Output
 
-Write the complete draft to `docs/seo/draft.md`:
+Write the complete draft to `docs/seo/<slug>/draft.md`:
 
 ```markdown
 ---
@@ -192,4 +198,4 @@ The draft must meet these minimum standards:
 
 After generating, tell the user:
 
-> Draft saved to `docs/seo/draft.md`. Review the content, then run `/seo-review` to get a detailed SEO quality score and specific improvement recommendations.
+> Draft saved to `docs/seo/<slug>/draft.md`. Review the content, then run `/seo-review <slug>` to get a detailed SEO quality score and specific improvement recommendations.

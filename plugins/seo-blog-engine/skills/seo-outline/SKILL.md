@@ -18,11 +18,17 @@ Read these before generating the outline (relative to this skill's base director
 
 ## Inputs
 
-ALL three are required. If any is missing, tell the user which file to create first.
+The first three are required. If any is missing, tell the user which file to create first.
 
-1. **Research brief** — `docs/seo/research-brief.md` (from `seo-research` → Claude.ai)
-2. **Keyword data** — `docs/seo/keyword-data.md` (from `seo-keywords`)
+1. **Research brief** — `docs/seo/<slug>/research-brief.md` (from `seo-research` → Claude.ai)
+2. **Keyword data** — `docs/seo/<slug>/keyword-data.md` (from `seo-keywords`)
 3. **Brand voice** — `docs/seo/brand-voice.md`
+4. **Topical clusters** — `docs/seo/topical-clusters.md` (if exists) — use to plan internal links to sibling posts in the same pillar and cross-pillar links
+5. **Article directory** — user specifies `docs/seo/<slug>/` or skill looks for the most recent article directory with both `research-brief.md` and `keyword-data.md`
+
+## Article Directory Convention
+
+All per-article files live in `docs/seo/<slug>/`. The user provides the slug, or the skill finds it by looking for the directory containing the required input files.
 
 ## Process
 
@@ -57,7 +63,7 @@ Generate a complete outline with every element specified.
 
 ## Output
 
-Write to `docs/seo/outline.md`:
+Write to `docs/seo/<slug>/outline.md`:
 
 ```markdown
 # Content Outline: {{Topic}}
@@ -231,4 +237,4 @@ Before saving, verify:
 
 After generating, tell the user:
 
-> Review the outline in `docs/seo/outline.md`. Modify headings, reorder sections, adjust word count targets, or add/remove FAQs as needed. Once you're satisfied, run `/seo-write` to generate the full draft.
+> Review the outline in `docs/seo/<slug>/outline.md`. Modify headings, reorder sections, adjust word count targets, or add/remove FAQs as needed. Once you're satisfied, run `/seo-write <slug>` to generate the full draft.
