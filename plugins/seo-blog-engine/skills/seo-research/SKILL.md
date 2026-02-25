@@ -6,7 +6,7 @@ model: sonnet
 
 # SEO Deep Research Prompt Generator
 
-Generate a ready-to-paste prompt for Claude.ai's deep research mode that collects verified facts, statistics, expert quotes, case studies, and competitor content analysis for a blog post topic.
+Generate a focused, completable prompt for Claude.ai's deep research mode. The prompt must be **lean enough to finish within 30-45 minutes** — not exhaust the 2-hour timeout.
 
 ## Inputs
 
@@ -54,67 +54,66 @@ Read `docs/seo/topical-clusters.md` if it exists. Look for the current topic in 
 - The strategic role of this post (TOFU/MOFU/BOFU)
 - Phase priority and target audience segment
 
-### Step 2 — Generate Deep Research Prompt
+### Step 2 — Classify What Needs External Research vs. What We Already Know
 
-Create a structured prompt optimized for Claude.ai's deep research mode. The prompt MUST include these sections:
+**CRITICAL**: Not everything needs Deep Research. Split the topic into:
 
-**Anti-hallucination instructions** (place at the top of the generated prompt):
+**Skip in the prompt** (we can write these ourselves or look up directly):
+
+- RFC specifications — these are static documents, cite them during writing
+- Technical definitions — we know the protocols
+- Tool lists and CLI commands — standard knowledge
+- DNS record syntax — reference material
+
+**Include in the prompt** (needs real-world, current data from the web):
+
+- Recent statistics and adoption data (last 2 years)
+- Real case studies and incident reports
+- Competitor article analysis and content gaps
+- Current regulatory enforcement status and deadlines
+- Expert quotes from published sources
+- Community questions and pain points (Reddit, forums)
+
+### Step 3 — Generate a Lean Research Prompt
+
+**Hard constraints for the generated prompt:**
+
+- **Maximum 4-5 research sections** (not 7, not 10, not 12)
+- **Explicit quantity caps per section** (e.g., "find 3-5 statistics", not open-ended)
+- **Total prompt length: 80-120 lines** (not 300+)
+- **No redundant output format spec** — keep it to a 5-line example, not a full template
+- **Add a stop condition**: "Once you have 3-5 items per section, move to the next section. Do not exhaustively crawl every possible source."
+
+**Anti-hallucination instructions** (place at the top, keep to 4 lines):
 
 ```
-CRITICAL INSTRUCTIONS:
-- Cite ONLY verifiable, published sources with URLs
-- For every statistic, include: the exact number, the source name, the publication year, and URL
-- If you cannot find a verifiable source for a claim, explicitly state "No verifiable source found"
-- Prefer primary sources (original research, official reports) over secondary sources (blog posts citing others)
-- Include a confidence level (High/Medium/Low) for each fact based on source quality
-- Flag any data older than 2 years as potentially outdated
+IMPORTANT: Cite only verifiable sources with URLs. For statistics, include the exact number, source name, year, and URL. If you can't verify a claim, state "unverified" and move on. Prefer primary sources (research reports, official docs) over blog posts. Flag data older than 2 years.
 ```
 
-**Research sections to request** (adapt based on topic):
+**Research sections — pick 4-5 from this menu based on the topic:**
 
-1. **Industry statistics & market data**
-   - Market size, growth rates, adoption percentages
-   - Recent surveys and reports (last 2 years)
-   - Trend data with year-over-year changes
+1. **Statistics & data** (3-5 key stats with sources)
+2. **Expert quotes** (2-3 verifiable quotes from named experts)
+3. **Case studies** (2-3 real-world examples with outcomes)
+4. **Regulatory context** (only if compliance is relevant to the topic)
+5. **Competitor content gaps** (analyze top 3 articles, not 5-10)
+6. **Community questions** (8-10 from Reddit/forums/PAA, not 15-20)
 
-2. **Expert quotes & authoritative opinions**
-   - Named experts with credentials
-   - Quotes from conference talks, interviews, published articles
-   - Contrasting viewpoints where they exist
+**Sections to OMIT from the prompt** (handle during seo-write instead):
 
-3. **Case studies & real-world examples**
-   - Companies/organizations that implemented the topic
-   - Quantified results (before/after metrics)
-   - Implementation timelines and challenges
+- RFC/protocol specifications — cite directly during writing
+- Diagnostic tools & methods — standard knowledge
+- Fix workflows — write from expertise during drafting
+- Detailed output format templates — a brief example suffices
 
-4. **Regulatory & compliance data** (if applicable)
-   - Relevant standards, RFCs, regulations
-   - Compliance requirements and deadlines
-   - Penalties or consequences of non-compliance
-
-5. **Competitor content analysis**
-   - What do the top 5 ranking articles for this keyword cover?
-   - What angles do they take?
-   - What's missing from their coverage? (content gaps)
-
-6. **People Also Ask questions**
-   - Common questions people search for around this topic
-   - Questions from Reddit, Stack Overflow, forums
-   - Emerging questions (new concerns, recent developments)
-
-7. **Counterarguments & nuance**
-   - Common misconceptions about the topic
-   - Legitimate criticisms or limitations
-   - Edge cases and exceptions
-
-### Step 3 — Determine Output Path
+### Step 4 — Determine Output Path
 
 1. If the user specified a file path in their message, use that
 2. Otherwise, derive a slug from the topic (lowercase, hyphenated, 3-5 words)
 3. Output path: `docs/seo/<slug>/prompt.md`
 4. Create the directory if it doesn't exist
 
-### Step 4 — Write the Prompt to File
+### Step 5 — Write the Prompt to File
 
 Write the generated research prompt to the output file using the Write tool.
 
@@ -129,60 +128,50 @@ Prompt written to `docs/seo/<slug>/prompt.md`.
 2. Start a new conversation
 3. Click the "Deep Research" button (or use the research mode toggle)
 4. Open the prompt file and paste its contents
-5. Wait for the research to complete (typically 3-5 minutes)
+5. Wait for the research to complete (typically 15-30 minutes)
 6. Save the output to `docs/seo/<slug>/research-brief.md` in your project
 ```
 
 ## Output Format
 
-The generated prompt should produce research organized as:
+The generated prompt should request research organized as a flat markdown file — **no nested templates or complex structure**. A simple example in the prompt is sufficient:
 
 ```markdown
 # Research Brief: {{Topic}}
 
 ## Key Statistics
 
-- [Stat] — Source: [Name] ([Year]) [URL] — Confidence: High/Medium/Low
+- [stat] — Source: [name] ([year]) [URL]
 
-## Expert Perspectives
+## Expert Quotes
 
-- "[Quote]" — [Name], [Title] at [Org] — Source: [URL]
+- "[quote]" — [name], [title] — Source: [URL]
 
 ## Case Studies
 
-### [Company/Org Name]
+### [Name]
 
-- Context: ...
-- Implementation: ...
-- Results: ... (quantified)
-- Source: [URL]
+- What happened, root cause, resolution, outcome — Source: [URL]
 
-## Regulatory Landscape
+## Content Gaps (vs top 3 ranking articles)
 
-- [Standard/Regulation]: [Key requirement] — Source: [URL]
+- What they cover: ...
+- What they miss: ...
 
-## Content Gap Analysis
+## Community Questions
 
-- Top articles cover: ...
-- Missing from existing coverage: ...
-
-## People Also Ask
-
-1. [Question]?
-2. [Question]?
-
-## Counterarguments & Nuance
-
-- [Misconception]: Actually, ... — Source: [URL]
+1. [question] — [source URL]
 ```
 
 ## Quality Checks
 
 Before outputting, verify the prompt:
 
-- [ ] Anti-hallucination instructions are at the top
-- [ ] All 7 research sections are included (adapt if some don't apply)
-- [ ] Brand context is woven in (industry terms, audience focus)
-- [ ] Output format is specified in the prompt
-- [ ] Source attribution format is defined
-- [ ] Recency requirements are stated (prefer last 2 years)
+- [ ] Total prompt is 80-120 lines (not 200+)
+- [ ] Maximum 4-5 research sections
+- [ ] Each section has explicit quantity caps (3-5 items, not open-ended)
+- [ ] Stop condition is present ("move to next section after N items")
+- [ ] No RFC/protocol spec requests (handle during writing)
+- [ ] No detailed output template (brief example only)
+- [ ] Anti-hallucination instructions are concise (4 lines max)
+- [ ] Brand context is included but brief (3-4 lines)
