@@ -1,8 +1,10 @@
 # SEO Blog Engine — Claude Code Plugin
 
-A family of 6 skills for producing SEO-optimized blog posts through a structured, multi-session workflow.
+A family of 9 skills for producing SEO-optimized blog posts, managing internal linking, and executing backlink outreach through a structured, multi-session workflow.
 
 ## Skills
+
+### Content Production Pipeline
 
 | #   | Skill        | Command                   | Purpose                                         |
 | --- | ------------ | ------------------------- | ----------------------------------------------- |
@@ -12,8 +14,18 @@ A family of 6 skills for producing SEO-optimized blog posts through a structured
 | 4   | seo-write    | `/seo-write [slug]`       | Full blog post draft from outline               |
 | 5   | seo-review   | `/seo-review [slug]`      | SEO audit with 100-point scoring rubric         |
 | 6   | seo-optimize | `/seo-optimize <url>`     | Post-publish validation via DataForSEO          |
+| 7   | seo-social   | `/seo-social [slug]`      | Platform-specific social media posts            |
+
+### Site-Wide SEO
+
+| #   | Skill                 | Command                                      | Purpose                                                     |
+| --- | --------------------- | -------------------------------------------- | ----------------------------------------------------------- |
+| 8   | seo-internal-linking  | `/seo-internal-linking [content-dir]`        | Audit all pages & generate internal linking recommendations |
+| 9   | seo-backlink-outreach | `/seo-backlink-outreach [slug\|--full-site]` | Discover backlink prospects & generate outreach templates   |
 
 ## Workflow
+
+### Content Production
 
 ```
 /seo-research "DMARC Failed Guide"  →  docs/seo/dmarc-failed-guide/prompt.md
@@ -33,6 +45,33 @@ A family of 6 skills for producing SEO-optimized blog posts through a structured
                                      (publish the post)
                                               ↓
 /seo-optimize <published-url>        →  post-publish health report
+                                              ↓
+/seo-social dmarc-failed-guide       →  docs/seo/dmarc-failed-guide/social-posts.md
+```
+
+### Internal Linking (run after publishing multiple posts)
+
+```
+/seo-internal-linking                →  explores all content pages via subagents
+                                              ↓
+                                     builds keyword-to-page map
+                                              ↓
+                                     docs/seo/internal-linking-report.md  →  (user reviews)
+                                              ↓
+                                     (user confirms → links applied to content files)
+```
+
+### Backlink Outreach (run after building content foundation)
+
+```
+/seo-backlink-outreach --full-site   →  explores all pages, scores backlink worthiness
+                                              ↓
+                                     SERP analysis + web search for prospects
+                                              ↓
+                                     docs/seo/backlink-outreach/strategy-overview.md
+                                     docs/seo/backlink-outreach/{slug}-outreach.md (per page)
+                                              ↓
+                                     (load templates into outreach tool, send campaigns)
 ```
 
 ## Setup
@@ -40,7 +79,7 @@ A family of 6 skills for producing SEO-optimized blog posts through a structured
 ### Prerequisites
 
 - Claude Code CLI installed
-- DataForSEO MCP server configured (required for `/seo-keywords` and `/seo-optimize`)
+- DataForSEO MCP server configured (required for `/seo-keywords`, `/seo-optimize`, `/seo-backlink-outreach`)
 
 ### Installation
 
@@ -104,6 +143,9 @@ The `references/` directory contains distilled SEO knowledge used by the skills:
 | `dataforseo-workflows.md`    | 4 tool workflows with exact parameters and thresholds           |
 | `eeat-signals.md`            | E-E-A-T implementation guide by content type                    |
 | `schema-markup-templates.md` | Article, FAQ, HowTo, BreadcrumbList JSON-LD templates           |
+| `internal-linking-guide.md`  | Readability-first linking principles, density, anchor text      |
+| `backlink-outreach-guide.md` | Prospect qualification, email templates, spintax, follow-ups    |
+| `social-media-platforms.md`  | Platform constraints and best practices for 7 platforms         |
 
 ## Per-Project File Structure
 
@@ -113,12 +155,18 @@ Global files live in `docs/seo/`. Per-article files live in `docs/seo/<slug>/`:
 docs/seo/
 ├── brand-voice.md              # shared — tone, audience, terminology
 ├── topical-clusters.md         # shared — long-term content roadmap
+├── internal-linking-report.md  # from /seo-internal-linking
+├── backlink-outreach/          # from /seo-backlink-outreach
+│   ├── strategy-overview.md    # priority matrix + campaign plan
+│   ├── dmarc-failed-guide-outreach.md
+│   └── spf-record-setup-outreach.md
 ├── dmarc-failed-guide/         # per-article directory
 │   ├── prompt.md               # from /seo-research
 │   ├── research-brief.md       # user saves from Claude.ai
 │   ├── keyword-data.md         # from /seo-keywords
 │   ├── outline.md              # from /seo-outline
-│   └── draft.md                # from /seo-write
+│   ├── draft.md                # from /seo-write
+│   └── social-posts.md         # from /seo-social
 ├── best-dmarc-tools-2026/
 │   ├── prompt.md
 │   └── ...
@@ -127,12 +175,15 @@ docs/seo/
     └── ...
 ```
 
-| File                       | Created by            | Purpose                                              |
-| -------------------------- | --------------------- | ---------------------------------------------------- |
-| `brand-voice.md`           | User (manual)         | Tone, audience, terminology, competitors             |
-| `topical-clusters.md`      | User / `/seo-outline` | Long-term content strategy and pillar map            |
-| `<slug>/prompt.md`         | `/seo-research`       | Deep research prompt for Claude.ai                   |
-| `<slug>/research-brief.md` | User (from Claude.ai) | Facts, stats, quotes, case studies                   |
-| `<slug>/keyword-data.md`   | `/seo-keywords`       | Keyword analysis with volumes, difficulty, SERP data |
-| `<slug>/outline.md`        | `/seo-outline`        | Approved content structure and keyword mapping       |
-| `<slug>/draft.md`          | `/seo-write`          | Complete blog post draft with schema markup          |
+| File                         | Created by               | Purpose                                              |
+| ---------------------------- | ------------------------ | ---------------------------------------------------- |
+| `brand-voice.md`             | User (manual)            | Tone, audience, terminology, competitors             |
+| `topical-clusters.md`        | User / `/seo-outline`    | Long-term content strategy and pillar map            |
+| `internal-linking-report.md` | `/seo-internal-linking`  | Site-wide linking audit and recommendations          |
+| `backlink-outreach/*.md`     | `/seo-backlink-outreach` | Prospect lists and outreach email templates          |
+| `<slug>/prompt.md`           | `/seo-research`          | Deep research prompt for Claude.ai                   |
+| `<slug>/research-brief.md`   | User (from Claude.ai)    | Facts, stats, quotes, case studies                   |
+| `<slug>/keyword-data.md`     | `/seo-keywords`          | Keyword analysis with volumes, difficulty, SERP data |
+| `<slug>/outline.md`          | `/seo-outline`           | Approved content structure and keyword mapping       |
+| `<slug>/draft.md`            | `/seo-write`             | Complete blog post draft with schema markup          |
+| `<slug>/social-posts.md`     | `/seo-social`            | Platform-specific social media posts                 |
